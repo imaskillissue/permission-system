@@ -2,3 +2,4 @@ test-server
 .gradle
 .idea
 build
+tests

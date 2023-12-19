@@ -58,10 +58,8 @@ public abstract class PermissionsOwner {
   public void updateList(String permissionsData) {
     String[] permissions = permissionsData.split(";");
     String[] toRemove =
-        (String[])
             Arrays.stream(ATTACHMENTS.keySet().toArray())
-                .filter(o -> !Arrays.stream(permissions).anyMatch(s -> s.equals(o)))
-                .toArray();
+                .filter(o -> !Arrays.stream(permissions).anyMatch(s -> s.equals(o))).toList().toArray(new String[0]);
     removePermissions(toRemove);
     addPermissions(permissions);
   }

@@ -51,11 +51,13 @@ class PermissionsOwnerTest {
     assertTrue(Arrays.asList(mockPermissionsOwner.getPermissions()).contains("test.permission"));
   }
 
-    @Test
-    void addPermission_ownsPermission() {
-        MockPermissionsOwner mockPermissionsOwner = new MockPermissionsOwner(new ArrayList<>());
-        mockPermissionsOwner.addPermission("test.permission");
-        mockPermissionsOwner.addPermission("test.permission");
-        assertEquals(1, mockPermissionsOwner.getPermissions().length);
-    }
+  @Test
+  void addPermission_ownsPermission() {
+    MockPermissionsOwner mockPermissionsOwner = new MockPermissionsOwner(new ArrayList<>());
+    mockPermissionsOwner.addPermission("test.permission");
+    mockPermissionsOwner.addPermission("test.permission");
+    assertEquals(1, mockPermissionsOwner.getPermissions().length);
+  }
+
+
 }

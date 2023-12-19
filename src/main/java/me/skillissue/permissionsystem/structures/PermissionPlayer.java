@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import me.skillissue.permissionsystem.utils.GroupStorage;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 public class PermissionPlayer extends PermissionsOwner {
@@ -22,7 +23,11 @@ public class PermissionPlayer extends PermissionsOwner {
   }
 
   public void setGroup(Group group) {
+    if (this.group != null && Bukkit.getPlayer(this.getPlayer().getUniqueId()) != null) {
+      this.group.removePermissionsGivenByGroup(Bukkit.getPlayer(this.getPlayer().getUniqueId()));
+    }
     this.group = group;
+    group.addPlayer(this);
   }
 
   public long getRankExpire() {

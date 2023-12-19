@@ -94,8 +94,8 @@ public class SqlConnection {
         addUser(permissionPlayer);
         return permissionPlayer;
       }
-      // TODO CONTINUE HERE
-      resultSet.getString("permission");
+      permissionPlayer.updateList(resultSet.getString("permission"));
+      permissionPlayer.setGroup(getGroup(resultSet.getInt("usergroup")));
       resultSet.getLong("rankexpire");
 
     } catch (Exception e) {
@@ -117,7 +117,7 @@ public class SqlConnection {
       group.setName(resultSet.getString("name"));
       group.setPrefix(resultSet.getString("prefix"));
       group.__pls_Dont_Use_It__(resultSet.getInt("id"));
-      group.addPermissions(resultSet.getString("permissions").split(";"));
+      group.updateList(resultSet.getString("permissions"));
       return group;
     } catch (Exception e) {
       e.printStackTrace();
@@ -169,7 +169,7 @@ public class SqlConnection {
         group.setName(resultSet.getString("name"));
         group.setPrefix(resultSet.getString("prefix"));
         group.__pls_Dont_Use_It__(resultSet.getInt("id"));
-        group.addPermissions(resultSet.getString("permissions").split(";"));
+        group.updateList(resultSet.getString("permissions"));
         groups.add(group);
       }
       return groups.toArray(new Group[0]);

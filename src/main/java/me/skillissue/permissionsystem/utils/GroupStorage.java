@@ -12,7 +12,8 @@ public class GroupStorage {
   static {
     GROUPS.addAll(Arrays.stream(PermissionSystem.getInstance().sql.getGroups()).toList());
     if (GROUPS.isEmpty()) {
-      GROUPS.add(new Group("default", "§7"));
+      Group group = new Group("default", "§7");
+      GROUPS.add(group.getId(), group);
     }
   }
 
