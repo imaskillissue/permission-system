@@ -1,22 +1,29 @@
 package me.skillissue.permissionsystem.structures;
 
 import me.skillissue.permissionsystem.PermissionSystem;
-import me.skillissue.permissionsystem.utils.PermissionUtil;
+import me.skillissue.permissionsystem.sql.SqlConnection;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Group {
+public class Group extends PermissionsOwner {
   private int id;
   private String name;
   private String prefix;
-  private ArrayList<String> permissions;
-  private ArrayList<Group> parents;
+
+  public Group() {
+    super(new ArrayList<>());
+  }
 
   public Group(String name, String prefix) {
+    super(new ArrayList<>());
     this.name = name;
     this.prefix = prefix;
+    this.id = PermissionSystem.getInstance().sql.addGroup(name, prefix, getPermissions());
   }
 
   public String getName() {
@@ -35,32 +42,24 @@ public class Group {
     this.prefix = prefix;
   }
 
-  public String[] getPermissions() {
-    ArrayList<String> perms = new ArrayList<>(permissions);
-    for (Group group : parents) {
-      perms.addAll(Arrays.stream(group.getPermissions()).toList());
-    }
-    return perms.toArray(new String[0]);
+  // WARNING: DO NOT USE THIS METHOD!!!
+  // This method is only used by the database to set the id
+  public void __pls_Dont_Use_It__(int i) {
+    this.id = i;
   }
 
   public int getId() {
     return id;
   }
-
-  public void addPermission(String permission) {
-    if (!permissions.contains(permission)) permissions.add(permission);
-  }
-
-  public void removePermission(String permission) {
-    permissions.remove(permission);
-  }
-
-  public void givePlayerPermissions(Player player) {
-    for (int i = 0; i < permissions.size(); i++) {
-      PermissionUtil.addPermission(player, permissions.get(i));
+  public void addPlayer(PermissionPlayer player) {
+    if (Bukkit.getPlayer(player.getPlayer().getUniqueId()) != null) {
+      player
+          .getGroup()
+          .removePermissionsGivenByGroup(Bukkit.getPlayer(player.getPlayer().getUniqueId()));
     }
-    for (int i = 0; i < parents.size(); i++) {
-      parents.get(i).givePlayerPermissions(player);
+    players.add(player.getPlayer());
+    if (Bukkit.getPlayer(player.getPlayer().getUniqueId()) != null) {
+      player.getGroup().givePlayerPermissions(Bukkit.getPlayer(player.getPlayer().getUniqueId()));
     }
   }
 }

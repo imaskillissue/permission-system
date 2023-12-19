@@ -2,13 +2,13 @@ package me.skillissue.permissionsystem.sql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import me.skillissue.permissionsystem.structures.Group;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import me.skillissue.permissionsystem.utils.FileConfigField;
-import me.skillissue.permissionsystem.utils.PermissionUtil;
 import org.bukkit.Bukkit;
 
 import java.sql.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class SqlConnection {
   @FileConfigField private String host;
@@ -102,5 +102,80 @@ public class SqlConnection {
       e.printStackTrace();
     }
     return permissionPlayer;
+  }
+
+  public Group getGroup(int id) {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement preparedStatement =
+          connection.prepareStatement("SELECT * FROM groups WHERE id = ?");
+      preparedStatement.setInt(1, id);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      if (!resultSet.next()) {
+        return null;
+      }
+      Group group = new Group();
+      group.setName(resultSet.getString("name"));
+      group.setPrefix(resultSet.getString("prefix"));
+      group.__pls_Dont_Use_It__(resultSet.getInt("id"));
+      group.addPermissions(resultSet.getString("permissions").split(";"));
+      return group;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public boolean existGroup(int id) {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement preparedStatement =
+          connection.prepareStatement("SELECT * FROM groups WHERE id = ?");
+      preparedStatement.setInt(1, id);
+      ResultSet resultSet = preparedStatement.executeQuery();
+      return resultSet.next();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
+  public int addGroup(String name, String prefix, String[] permissions) {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement preparedStatement =
+          connection.prepareStatement(
+              "INSERT INTO groups (name, prefix, permissions) VALUES (?, ?, ?);",
+              Statement.RETURN_GENERATED_KEYS);
+      preparedStatement.setString(1, name);
+      preparedStatement.setString(2, prefix);
+      preparedStatement.setString(3, String.join(";", permissions));
+      preparedStatement.execute();
+      ResultSet resultSet = preparedStatement.getGeneratedKeys();
+      if (!resultSet.next()) {
+        return -1;
+      }
+      return resultSet.getInt(1);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return -1;
+  }
+
+  public Group[] getGroups() {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM groups");
+      ResultSet resultSet = preparedStatement.executeQuery();
+      ArrayList<Group> groups = new ArrayList<>();
+      while (resultSet.next()) {
+        Group group = new Group();
+        group.setName(resultSet.getString("name"));
+        group.setPrefix(resultSet.getString("prefix"));
+        group.__pls_Dont_Use_It__(resultSet.getInt("id"));
+        group.addPermissions(resultSet.getString("permissions").split(";"));
+        groups.add(group);
+      }
+      return groups.toArray(new Group[0]);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }

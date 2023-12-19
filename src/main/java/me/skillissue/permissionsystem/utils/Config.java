@@ -12,7 +12,7 @@ public class Config {
     File file = new File("plugins/PermissionSystem", "config.yml");
     if (!file.exists()) {
       try {
-        file.getParentFile().mkdir();
+        file.getParentFile().mkdirs();
         file.createNewFile();
         FileConfigUtil.saveObjectToConfig(this, file);
       } catch (IOException e) {

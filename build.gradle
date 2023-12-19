@@ -20,6 +20,8 @@ repositories {
 
 test {
     useJUnitPlatform()
+    mkdir("tests")
+    workingDir("tests")
 }
 
 dependencies {

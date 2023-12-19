@@ -10,14 +10,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public abstract class PermissionsOwner {
-  private final HashMap<String, ArrayList<PermissionAttachment>> ATTACHMENTS = new HashMap<>();
+  protected final HashMap<String, ArrayList<PermissionAttachment>> ATTACHMENTS = new HashMap<>();
   protected ArrayList<OfflinePlayer> players;
 
   protected PermissionsOwner(ArrayList<OfflinePlayer> players) {
     this.players = players;
   }
 
-  public void addPermissions(String permission) {
+  public void addPermission(String permission) {
     if (ATTACHMENTS.containsKey(permission)) {
       return;
     }
@@ -32,7 +32,7 @@ public abstract class PermissionsOwner {
 
   public void addPermissions(String[] permissions) {
     for (String permission : permissions) {
-      addPermissions(permission);
+      addPermission(permission);
     }
   }
 
@@ -67,6 +67,26 @@ public abstract class PermissionsOwner {
   }
 
   public void cleanPermissions() {
-
+    for (String permission : ATTACHMENTS.keySet()) {
+      removePermission(permission);
+    }
   }
+
+  protected void givePlayerPermissions(Player player) {
+    for (String permission : ATTACHMENTS.keySet()) {
+      ATTACHMENTS.get(permission).add(PermissionUtil.addPermission(player, permission));
+    }
+  }
+
+
+  protected void removePermissionsGivenByGroup(Player player) {
+    for (ArrayList<PermissionAttachment> attachments : ATTACHMENTS.values()) {
+      for (PermissionAttachment attachment : attachments) {
+        if (attachment.getPermissible() == player) {
+          attachment.remove();
+        }
+      }
+    }
+  }
+
 }
