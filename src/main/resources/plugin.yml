@@ -1,0 +1,12 @@
+name: PermissionSystem
+version: '${version}'
+main: me.skillissue.permissionsystem.PermissionSystem
+api-version: '1.20'
+author: ImaSkillissue
+loader: me.skillissue.permissionsystem.PermissionSystemLoader
+
+commands:
+    permissionsystem:
+        description: PermissionSystem command
+        usage: /permissionsystem
+        aliases: [ps, perms]

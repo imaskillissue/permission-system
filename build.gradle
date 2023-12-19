@@ -1,0 +1,89 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+group = 'me.skillissue'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT"
+    testImplementation 'com.github.seeseemelk:MockBukkit-v1.20:3.9.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    compileOnly 'com.zaxxer:HikariCP:5.1.0'
+    testRuntimeOnly 'com.zaxxer:HikariCP:5.1.0'
+    testRuntimeOnly 'mysql:mysql-connector-java:8.0.33'
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+// Create a Task called run that runs the server
+task run(type: JavaExec) {
+    dependsOn(build)
+    if (!file("test-server/paper.jar").exists()) {
+        mkdir("test-server");
+        file("test-server/paper.jar")
+        file("test-server/eula.txt").withOutputStream { os ->
+            os.withPrintWriter { writer ->
+                writer.println("#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).\n" +
+                        "#Sun Dec 17 21:10:25 CET 2023\n" +
+                        "eula=true")
+
+            }
+        }
+        new URL("https://api.papermc.io/v2/projects/paper/versions/1.20.2/builds/318/downloads/paper-1.20.2-318.jar").withInputStream { is ->
+            file("test-server/paper.jar").withOutputStream { it << is }
+        }
+    }
+    mkdir("test-server/plugins")
+    def plugin = file(buildDir.absolutePath + "/libs").listFiles()[0]
+    if (plugin.exists())
+        plugin.withInputStream { is ->
+            file("test-server/plugins/PermissionsSystem.jar").withOutputStream { it << is }
+        }
+    workingDir("test-server")
+    classpath("test-server/paper.jar")
+    jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
+    args("nogui")
+}
+kotlin {
+    jvmToolchain(17)
+}
