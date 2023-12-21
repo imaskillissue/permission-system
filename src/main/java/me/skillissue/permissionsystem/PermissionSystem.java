@@ -17,7 +17,14 @@ public class PermissionSystem extends JavaPlugin {
   public void onEnable() {
     new Config();
     instance = this;
-    sql = new SqlConnection("127.0.0.1", 3306, "permissions", "valo", "pw");
+    sql = new SqlConnection();
+    if (!sql.isConnected()) {
+      Bukkit.getConsoleSender().sendMessage(StringUtils.formatMessage("%sql_not_connected"));
+      Bukkit.getPluginManager().disablePlugin(this);
+      return;
+    } else {
+      Bukkit.getConsoleSender().sendMessage(StringUtils.formatMessage("%sql_connected"));
+    }
     Bukkit.getConsoleSender().sendMessage("Cmd: " + this.getCommand("permissionsystem"));
     CommandExecutor cmd = new PermissionSystemCommand();
     this.getCommand("permissionsystem").setExecutor(cmd);

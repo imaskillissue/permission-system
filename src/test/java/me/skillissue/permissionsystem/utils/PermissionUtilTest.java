@@ -23,6 +23,8 @@ class PermissionUtilTest {
 
   @AfterEach
   void cleanUp() {
+    PermissionSystem.getInstance().sql.dropTable("groups");
+    PermissionSystem.getInstance().sql.dropTable("users");
     MockBukkit.unmock();
   }
 

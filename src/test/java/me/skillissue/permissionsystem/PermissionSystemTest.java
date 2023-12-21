@@ -22,6 +22,8 @@ class PermissionSystemTest {
 
   @AfterEach
   void tearDown() {
+    PermissionSystem.getInstance().sql.dropTable("groups");
+    PermissionSystem.getInstance().sql.dropTable("users");
     MockBukkit.unmock();
   }
 
@@ -29,6 +31,6 @@ class PermissionSystemTest {
   void playerGotNameUpdate() {
     Player player = server.addPlayer("Test");
     // Check if the player displayName is group.prefix + player.name
-    assertEquals(GroupStorage.getGroupById(0).getPrefix()+"Test§r", player.getDisplayName());
+    assertEquals(GroupStorage.getGroupById(1).getPrefix()+"Test§r", player.getDisplayName());
   }
 }

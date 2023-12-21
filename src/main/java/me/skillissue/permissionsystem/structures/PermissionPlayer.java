@@ -10,7 +10,7 @@ import org.bukkit.OfflinePlayer;
 
 public class PermissionPlayer extends PermissionsOwner {
   private final OfflinePlayer PLAYER;
-  private Group group = GroupStorage.getGroupById(0);
+  private Group group = GroupStorage.getGroupById(1);
   private long rankExpire = 0L;
 
   public PermissionPlayer(OfflinePlayer player) {
@@ -40,5 +40,8 @@ public class PermissionPlayer extends PermissionsOwner {
 
   public OfflinePlayer getPlayer() {
     return PLAYER;
+  }
+
+  public void reload() {
   }
 }

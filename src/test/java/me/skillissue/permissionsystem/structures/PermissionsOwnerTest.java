@@ -25,6 +25,8 @@ class PermissionsOwnerTest {
 
   @AfterEach
   void tearDown() {
+    PermissionSystem.getInstance().sql.dropTable("groups");
+    PermissionSystem.getInstance().sql.dropTable("users");
     MockBukkit.unmock();
   }
 

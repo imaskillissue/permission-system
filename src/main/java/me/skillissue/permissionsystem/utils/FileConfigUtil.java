@@ -10,6 +10,14 @@ import java.util.HashMap;
 
 public class FileConfigUtil {
   public static void saveObjectToConfig(Object o, File file) {
+    if (!file.exists()) {
+      try {
+        file.getParentFile().mkdirs();
+        file.createNewFile();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
     HashMap<String, Object> map = new HashMap<>();
     for (Field field : o.getClass().getDeclaredFields()) {
       field.setAccessible(true);
@@ -33,6 +41,7 @@ public class FileConfigUtil {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public static void loadConfig(Object o, File file) {
     if (!file.exists()) {
       return;
@@ -42,16 +51,15 @@ public class FileConfigUtil {
       field.setAccessible(true);
       if (!field.isAnnotationPresent(FileConfigField.class)
           || !field.canAccess(o)
-          || !configuration.contains(field.getName()) ||
-          configuration.get(field.getName()) == null) {
+          || !configuration.contains(field.getName())
+          || configuration.get(field.getName()) == null) {
         continue;
       }
       try {
-        if (field.getType() == HashMap.class) {
-          HashMap<String, String> map = (HashMap<String, String>) field.get(o);
-          if (configuration.get(field.getName()) instanceof HashMap) {
-            map.clear();
-            map.putAll((HashMap<String, String>) configuration.get(field.getName()));
+        if (field.get(o) instanceof HashMap<?, ?> && configuration.get(field.getName()) != null) {
+          HashMap<?, ?> map = (HashMap<?, ?>) field.get(o);
+          if (configuration.get(field.getName()) instanceof HashMap<?, ?>) {
+            map.putAll((HashMap) configuration.get(field.getName()));
           }
           continue;
         }

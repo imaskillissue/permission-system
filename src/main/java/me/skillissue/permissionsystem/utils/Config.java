@@ -47,15 +47,10 @@ public class Config {
             §a1d §7= §a1 Day
             §a1M §7= §a1 Month
             §a1y §7= §a1 Year""");
+    messages.put("sql_connected", "%prefix §aConnected to MySQL!");
     File file = new File("plugins/PermissionSystem", "config.yml");
     if (!file.exists()) {
-      try {
-        file.getParentFile().mkdirs();
-        file.createNewFile();
-        FileConfigUtil.saveObjectToConfig(this, file);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      FileConfigUtil.saveObjectToConfig(this, file);
       return;
     }
     FileConfigUtil.loadConfig(this, file);

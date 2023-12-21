@@ -5,8 +5,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import me.skillissue.permissionsystem.structures.Group;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import me.skillissue.permissionsystem.utils.FileConfigField;
+import me.skillissue.permissionsystem.utils.FileConfigUtil;
 import org.bukkit.Bukkit;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -27,6 +29,13 @@ public class SqlConnection {
     this.database = "permissionsystem";
     this.username = "root";
     this.password = "password";
+    File file = new File("plugins/PermissionSystem/MySQL.yml");
+    if (file.exists()) {
+      FileConfigUtil.loadConfig(this, file);
+    } else {
+      FileConfigUtil.saveObjectToConfig(this, file);
+    }
+    connect();
   }
 
   public SqlConnection(String host, int port, String database, String username, String password) {
@@ -69,6 +78,25 @@ public class SqlConnection {
       getUser = connection.prepareStatement("SELECT * FROM users WHERE uuid = ?");
     } catch (Exception e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public boolean isConnected() {
+    try (Connection connection = dataSource.getConnection()) {
+      return connection.isValid(1000);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
+  public void dropTable(String name) {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement preparedStatement =
+          connection.prepareStatement("DROP TABLE " + name);
+      preparedStatement.execute();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
