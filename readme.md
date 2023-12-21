@@ -9,7 +9,7 @@ Simple permission System for PaperMC
 ## ToDo's:
 ### Necessary:
 - [X] Add MySQL Support
-- [ ] Temporary Group membership
+- [X] Temporary Group membership
 - [X] Add Permissions
 - [X] Add Command
 - [X] Add Config

@@ -2,7 +2,6 @@ package me.skillissue.permissionsystem;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import me.skillissue.permissionsystem.structures.Group;
 import me.skillissue.permissionsystem.utils.GroupStorage;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
@@ -22,8 +21,7 @@ class PermissionSystemTest {
 
   @AfterEach
   void tearDown() {
-    PermissionSystem.getInstance().sql.dropTable("groups");
-    PermissionSystem.getInstance().sql.dropTable("users");
+    PermissionSystem.getInstance().sql.dropTables();
     MockBukkit.unmock();
   }
 

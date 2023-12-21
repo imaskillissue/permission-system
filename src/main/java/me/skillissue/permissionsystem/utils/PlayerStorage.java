@@ -1,5 +1,6 @@
 package me.skillissue.permissionsystem.utils;
 
+import me.skillissue.permissionsystem.PermissionSystem;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -16,8 +17,7 @@ public class PlayerStorage {
     if (permissionPlayerHashMap.containsKey(player)) {
       return permissionPlayerHashMap.get(player);
     }
-    PermissionPlayer permissionPlayer = new PermissionPlayer(player);
-    permissionPlayer.setGroup(GroupStorage.getGroupByName("default"));
+    PermissionPlayer permissionPlayer = PermissionSystem.getInstance().sql.getPlayer(player.getUniqueId().toString());
     return permissionPlayer;
   }
 
@@ -27,5 +27,11 @@ public class PlayerStorage {
 
   public static void unloadPlayer(Player player) {
     permissionPlayerHashMap.remove(player);
+  }
+
+  public static void reload() {
+    for (OfflinePlayer player : permissionPlayerHashMap.keySet()) {
+      permissionPlayerHashMap.get(player).reload();
+    }
   }
 }

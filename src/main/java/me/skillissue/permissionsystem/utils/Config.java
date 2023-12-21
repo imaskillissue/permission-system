@@ -7,6 +7,7 @@ import java.util.HashMap;
 public class Config {
   private static Config instance;
   @FileConfigField public String command_permission = "permissionsystem";
+  @FileConfigField public int sql_sync_interval = 30;
   @FileConfigField public HashMap<String, String> messages = new HashMap<>();
 
   public Config() {
@@ -48,6 +49,11 @@ public class Config {
             §a1M §7= §a1 Month
             §a1y §7= §a1 Year""");
     messages.put("sql_connected", "%prefix §aConnected to MySQL!");
+    messages.put("sql_sync", "%prefix §aSynced with MySQL Database!");
+    messages.put("sign_line1", "§3Rank Info:");
+    messages.put("sign_line2", "§3Group: §a%group");
+    messages.put("sign_line3", "§3Expire: §a%expire");
+    messages.put("sign_line4", "§eHave Fun!");
     File file = new File("plugins/PermissionSystem", "config.yml");
     if (!file.exists()) {
       FileConfigUtil.saveObjectToConfig(this, file);

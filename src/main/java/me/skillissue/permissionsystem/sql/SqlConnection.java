@@ -19,9 +19,12 @@ public class SqlConnection {
   @FileConfigField private String username;
   @FileConfigField private String password;
   private HikariDataSource dataSource;
+  private Connection connection;
 
-  private PreparedStatement addUser;
-  private PreparedStatement getUser;
+  private static PreparedStatement addUser;
+  private static PreparedStatement getUser;
+  private static PreparedStatement dropTables;
+  private static PreparedStatement addGroup;
 
   public SqlConnection() {
     this.host = "localhost";
@@ -53,7 +56,8 @@ public class SqlConnection {
     config.setUsername("valo");
     config.setPassword("pw");
     dataSource = new HikariDataSource(config);
-    try (Connection connection = dataSource.getConnection()) {
+    try {
+      connection = dataSource.getConnection();
       PreparedStatement preparedStatement =
           connection.prepareStatement(
               "CREATE TABLE IF NOT EXISTS users ("
@@ -82,7 +86,7 @@ public class SqlConnection {
   }
 
   public boolean isConnected() {
-    try (Connection connection = dataSource.getConnection()) {
+    try {
       return connection.isValid(1000);
     } catch (Exception e) {
       e.printStackTrace();
@@ -90,11 +94,12 @@ public class SqlConnection {
     return false;
   }
 
-  public void dropTable(String name) {
-    try (Connection connection = dataSource.getConnection()) {
-      PreparedStatement preparedStatement =
-          connection.prepareStatement("DROP TABLE " + name);
-      preparedStatement.execute();
+  public void dropTables() {
+    try {
+      if (dropTables == null) {
+        dropTables = connection.prepareStatement("DROP TABLE users, `groups`;");
+      }
+      dropTables.execute();
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -129,11 +134,25 @@ public class SqlConnection {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    if (permissionPlayer.getGroup() == null) {
+      permissionPlayer.setGroup(getGroup(1));
+    }
     return permissionPlayer;
   }
 
+  private boolean existPlayer(String uuid) {
+    try {
+      getUser.setString(1, uuid);
+      ResultSet resultSet = getUser.executeQuery();
+      return resultSet.next();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return false;
+  }
+
   public Group getGroup(int id) {
-    try (Connection connection = dataSource.getConnection()) {
+    try {
       PreparedStatement preparedStatement =
           connection.prepareStatement("SELECT * FROM groups WHERE id = ?");
       preparedStatement.setInt(1, id);
@@ -154,7 +173,7 @@ public class SqlConnection {
   }
 
   public boolean existGroup(int id) {
-    try (Connection connection = dataSource.getConnection()) {
+    try {
       PreparedStatement preparedStatement =
           connection.prepareStatement("SELECT * FROM groups WHERE id = ?");
       preparedStatement.setInt(1, id);
@@ -167,16 +186,18 @@ public class SqlConnection {
   }
 
   public int addGroup(String name, String prefix, String[] permissions) {
-    try (Connection connection = dataSource.getConnection()) {
-      PreparedStatement preparedStatement =
-          connection.prepareStatement(
-              "INSERT INTO groups (name, prefix, permissions) VALUES (?, ?, ?);",
-              Statement.RETURN_GENERATED_KEYS);
-      preparedStatement.setString(1, name);
-      preparedStatement.setString(2, prefix);
-      preparedStatement.setString(3, String.join(";", permissions));
-      preparedStatement.execute();
-      ResultSet resultSet = preparedStatement.getGeneratedKeys();
+    try {
+      if (addGroup == null) {
+        addGroup =
+            connection.prepareStatement(
+                "INSERT INTO groups (name, prefix, permissions) VALUES (?, ?, ?);",
+                Statement.RETURN_GENERATED_KEYS);
+      }
+      addGroup.setString(1, name);
+      addGroup.setString(2, prefix);
+      addGroup.setString(3, String.join(";", permissions));
+      addGroup.execute();
+      ResultSet resultSet = addGroup.getGeneratedKeys();
       if (!resultSet.next()) {
         return -1;
       }
@@ -188,7 +209,7 @@ public class SqlConnection {
   }
 
   public Group[] getGroups() {
-    try (Connection connection = dataSource.getConnection()) {
+    try {
       PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM groups");
       ResultSet resultSet = preparedStatement.executeQuery();
       ArrayList<Group> groups = new ArrayList<>();
@@ -201,6 +222,15 @@ public class SqlConnection {
         groups.add(group);
       }
       return groups.toArray(new Group[0]);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public PreparedStatement createStatement(String sql) {
+    try {
+      return dataSource.getConnection().prepareStatement(sql);
     } catch (Exception e) {
       e.printStackTrace();
     }

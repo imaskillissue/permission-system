@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -60,6 +61,16 @@ public class Group extends PermissionsOwner {
     players.add(player.getPlayer());
     if (Bukkit.getPlayer(player.getPlayer().getUniqueId()) != null) {
       player.getGroup().givePlayerPermissions(Bukkit.getPlayer(player.getPlayer().getUniqueId()));
+    }
+  }
+
+  public void load(ResultSet resultSet) {
+    try {
+      this.name = resultSet.getString("name");
+      this.prefix = resultSet.getString("prefix");
+      updateList(resultSet.getString("permissions"));
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
   }
 }

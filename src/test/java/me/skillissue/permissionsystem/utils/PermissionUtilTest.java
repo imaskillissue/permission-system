@@ -3,9 +3,7 @@ package me.skillissue.permissionsystem.utils;
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import me.skillissue.permissionsystem.PermissionSystem;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,8 +21,7 @@ class PermissionUtilTest {
 
   @AfterEach
   void cleanUp() {
-    PermissionSystem.getInstance().sql.dropTable("groups");
-    PermissionSystem.getInstance().sql.dropTable("users");
+    PermissionSystem.getInstance().sql.dropTables();
     MockBukkit.unmock();
   }
 
