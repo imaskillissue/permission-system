@@ -1,12 +1,11 @@
 package me.skillissue.permissionsystem.utils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
 import me.skillissue.permissionsystem.tests.FooConfig;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
-
-import java.io.File;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class FileConfigUtilTest {
 

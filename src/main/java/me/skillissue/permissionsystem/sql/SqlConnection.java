@@ -2,15 +2,14 @@ package me.skillissue.permissionsystem.sql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.io.File;
+import java.sql.*;
+import java.util.ArrayList;
 import me.skillissue.permissionsystem.structures.Group;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import me.skillissue.permissionsystem.utils.FileConfigField;
 import me.skillissue.permissionsystem.utils.FileConfigUtil;
 import org.bukkit.Bukkit;
-
-import java.io.File;
-import java.sql.*;
-import java.util.ArrayList;
 
 public class SqlConnection {
   @FileConfigField private String host;

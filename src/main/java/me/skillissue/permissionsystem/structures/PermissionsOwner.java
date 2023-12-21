@@ -1,17 +1,18 @@
 package me.skillissue.permissionsystem.structures;
 
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import me.skillissue.permissionsystem.utils.PermissionUtil;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
 public abstract class PermissionsOwner {
   protected final HashMap<String, ArrayList<PermissionAttachment>> ATTACHMENTS = new HashMap<>();
   protected ArrayList<OfflinePlayer> players;
+  protected PreparedStatement updateStatement;
 
   protected PermissionsOwner(ArrayList<OfflinePlayer> players) {
     this.players = players;
@@ -22,6 +23,7 @@ public abstract class PermissionsOwner {
       return;
     }
     ATTACHMENTS.put(permission, new ArrayList<>());
+    save();
     for (OfflinePlayer player : players) {
       if (player.getPlayer() == null) {
         continue;
@@ -43,6 +45,7 @@ public abstract class PermissionsOwner {
       }
       ATTACHMENTS.remove(permission);
     }
+    save();
   }
 
   public void removePermissions(String[] permissions) {
@@ -64,12 +67,6 @@ public abstract class PermissionsOwner {
     addPermissions(permissions);
   }
 
-  public void cleanPermissions() {
-    for (String permission : ATTACHMENTS.keySet()) {
-      removePermission(permission);
-    }
-  }
-
   protected void givePlayerPermissions(Player player) {
     for (String permission : ATTACHMENTS.keySet()) {
       ATTACHMENTS.get(permission).add(PermissionUtil.addPermission(player, permission));
@@ -87,4 +84,9 @@ public abstract class PermissionsOwner {
     }
   }
 
+  public boolean hasPermission(String permission) {
+    return ATTACHMENTS.containsKey(permission);
+  }
+
+  protected abstract void save();
 }

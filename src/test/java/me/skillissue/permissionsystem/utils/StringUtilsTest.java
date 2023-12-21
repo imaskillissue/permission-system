@@ -1,7 +1,7 @@
 package me.skillissue.permissionsystem.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import me.skillissue.permissionsystem.utils.StringUtils;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

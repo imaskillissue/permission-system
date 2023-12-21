@@ -1,20 +1,16 @@
 package me.skillissue.permissionsystem.structures;
 
-import me.skillissue.permissionsystem.PermissionSystem;
-import me.skillissue.permissionsystem.sql.SqlConnection;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
-
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
+import me.skillissue.permissionsystem.PermissionSystem;
+import org.bukkit.Bukkit;
 
 public class Group extends PermissionsOwner {
   private int id;
   private String name;
   private String prefix;
+  private PreparedStatement updateStatement;
 
   public Group() {
     super(new ArrayList<>());
@@ -33,6 +29,7 @@ public class Group extends PermissionsOwner {
 
   public void setName(String name) {
     this.name = name;
+    save();
   }
 
   public String getPrefix() {
@@ -41,6 +38,7 @@ public class Group extends PermissionsOwner {
 
   public void setPrefix(String prefix) {
     this.prefix = prefix;
+    save();
   }
 
   // WARNING: DO NOT USE THIS METHOD!!!
@@ -52,6 +50,7 @@ public class Group extends PermissionsOwner {
   public int getId() {
     return id;
   }
+
   public void addPlayer(PermissionPlayer player) {
     if (Bukkit.getPlayer(player.getPlayer().getUniqueId()) != null) {
       player
@@ -69,6 +68,26 @@ public class Group extends PermissionsOwner {
       this.name = resultSet.getString("name");
       this.prefix = resultSet.getString("prefix");
       updateList(resultSet.getString("permissions"));
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  @Override
+  protected void save() {
+    try {
+      if (updateStatement == null) {
+        updateStatement =
+            PermissionSystem.getInstance()
+                .sql
+                .createStatement(
+                    "UPDATE `groups` SET name = ?, prefix = ?, permissions = ? WHERE id = ?;");
+      }
+      updateStatement.setString(1, String.join(";", getPermissions()));
+      updateStatement.setString(2, name);
+      updateStatement.setString(3, prefix);
+      updateStatement.setInt(4, id);
+      updateStatement.executeUpdate();
     } catch (Exception ex) {
       ex.printStackTrace();
     }

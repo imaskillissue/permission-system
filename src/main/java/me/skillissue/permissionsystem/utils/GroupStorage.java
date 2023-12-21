@@ -1,18 +1,16 @@
 package me.skillissue.permissionsystem.utils;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
 import me.skillissue.permissionsystem.PermissionSystem;
 import me.skillissue.permissionsystem.sql.SqlConnection;
 import me.skillissue.permissionsystem.structures.Group;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-
 public class GroupStorage {
   private static PreparedStatement selectStatement;
+  private static PreparedStatement dropStatement;
   private static final HashMap<Integer, Group> GROUPS = new HashMap<>();
 
   static {
@@ -63,5 +61,28 @@ public class GroupStorage {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static void deleteGroup(Group group) {
+    try {
+      if (dropStatement == null) {
+        SqlConnection sql = PermissionSystem.getInstance().sql;
+        dropStatement = sql.createStatement("DELETE FROM `groups` WHERE `id` = ?");
+      }
+      dropStatement.setInt(1, group.getId());
+      dropStatement.execute();
+      GROUPS.remove(group.getId());
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static boolean addGroup(String name) {
+    if (getGroupByName(name) != null) {
+      return false;
+    }
+    Group group = new Group(name, "§7");
+    GROUPS.put(group.getId(), group);
+    return true;
   }
 }

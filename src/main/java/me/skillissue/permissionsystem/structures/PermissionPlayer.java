@@ -1,13 +1,10 @@
 package me.skillissue.permissionsystem.structures;
 
-import java.lang.ref.PhantomReference;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import me.skillissue.permissionsystem.PermissionSystem;
 import me.skillissue.permissionsystem.sql.SqlConnection;
 import me.skillissue.permissionsystem.utils.GroupStorage;
@@ -46,12 +43,13 @@ public class PermissionPlayer extends PermissionsOwner {
         updateStatement =
             PermissionSystem.getInstance()
                 .sql
-                .createStatement("UPDATE users SET usergroup = ?, rankexpire = ? WHERE uuid = ?;");
+                .createStatement("UPDATE users SET usergroup = ?, rankexpire = ?, permissions = ? WHERE uuid = ?;");
       }
 
       updateStatement.setInt(1, group.getId());
       updateStatement.setLong(2, rankExpire);
-      updateStatement.setString(3, getPlayer().getUniqueId().toString());
+        updateStatement.setString(3, String.join(";", getPermissions()));
+      updateStatement.setString(4, getPlayer().getUniqueId().toString());
       updateStatement.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -64,6 +62,7 @@ public class PermissionPlayer extends PermissionsOwner {
 
   public void setRankExpire(long rankExpire) {
     this.rankExpire = rankExpire;
+    save();
   }
 
   public OfflinePlayer getPlayer() {
@@ -85,6 +84,25 @@ public class PermissionPlayer extends PermissionsOwner {
             resultSet.getLong("rankexpire"));
         updateList(resultSet.getString("permissions"));
       }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  protected void save() {
+    try {
+      if (updateStatement == null) {
+        updateStatement =
+            PermissionSystem.getInstance()
+                .sql
+                .createStatement("UPDATE users SET usergroup = ?, rankexpire = ?, permissions = ? WHERE uuid = ?;");
+      }
+      updateStatement.setInt(1, group.getId());
+      updateStatement.setLong(2, rankExpire);
+      updateStatement.setString(3, String.join(";", getPermissions()));
+      updateStatement.setString(4, getPlayer().getUniqueId().toString());
+      updateStatement.executeUpdate();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

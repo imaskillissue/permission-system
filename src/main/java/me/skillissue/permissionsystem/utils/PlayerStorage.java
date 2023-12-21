@@ -1,11 +1,10 @@
 package me.skillissue.permissionsystem.utils;
 
+import java.util.HashMap;
 import me.skillissue.permissionsystem.PermissionSystem;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
 
 public class PlayerStorage {
   private static final HashMap<OfflinePlayer, PermissionPlayer> permissionPlayerHashMap =

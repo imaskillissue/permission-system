@@ -1,18 +1,17 @@
 package me.skillissue.permissionsystem.structures;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
+import java.util.ArrayList;
+import java.util.Arrays;
 import me.skillissue.permissionsystem.PermissionSystem;
 import me.skillissue.permissionsystem.tests.MockPermissionsOwner;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class PermissionsOwnerTest {
   ServerMock server;

@@ -1,11 +1,9 @@
 package me.skillissue.permissionsystem.utils;
 
-import me.skillissue.permissionsystem.structures.PermissionPlayer;
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
-
-import java.util.Objects;
 
 public class PermissionUtil {
 
