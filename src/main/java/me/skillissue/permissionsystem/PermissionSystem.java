@@ -4,6 +4,7 @@ import me.skillissue.permissionsystem.cmd.PermissionSystemCommand;
 import me.skillissue.permissionsystem.listeners.ServerMemberHandler;
 import me.skillissue.permissionsystem.sql.SqlConnection;
 import me.skillissue.permissionsystem.utils.Config;
+import me.skillissue.permissionsystem.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +23,7 @@ public class PermissionSystem extends JavaPlugin {
     this.getCommand("permissionsystem").setExecutor(cmd);
     this.getCommand("ps").setExecutor(cmd);
     this.getCommand("perms").setExecutor(cmd);
-    Bukkit.getConsoleSender().sendMessage(Config.getInstance().prefix + " Plugin was loaded");
+    Bukkit.getConsoleSender().sendMessage(StringUtils.formatMessage(StringUtils.formatMessage("%plugin_loaded")));
     Bukkit.getPluginManager().registerEvents(new ServerMemberHandler(), this);
   }
 

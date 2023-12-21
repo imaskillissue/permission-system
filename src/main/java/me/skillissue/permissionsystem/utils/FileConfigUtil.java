@@ -42,10 +42,19 @@ public class FileConfigUtil {
       field.setAccessible(true);
       if (!field.isAnnotationPresent(FileConfigField.class)
           || !field.canAccess(o)
-          || !configuration.contains(field.getName())) {
+          || !configuration.contains(field.getName()) ||
+          configuration.get(field.getName()) == null) {
         continue;
       }
       try {
+        if (field.getType() == HashMap.class) {
+          HashMap<String, String> map = (HashMap<String, String>) field.get(o);
+          if (configuration.get(field.getName()) instanceof HashMap) {
+            map.clear();
+            map.putAll((HashMap<String, String>) configuration.get(field.getName()));
+          }
+          continue;
+        }
         field.set(o, configuration.get(field.getName()));
       } catch (IllegalAccessException e) {
         throw new RuntimeException(e);

@@ -11,7 +11,7 @@ public class ServerMemberHandler implements Listener {
  @EventHandler(ignoreCancelled = true)
  public void onPlayerJoin(PlayerJoinEvent event) {
   PermissionPlayer permissionPlayer = PlayerStorage.getPermissionData(event.getPlayer());
-  event.getPlayer().displayName(Component.text(permissionPlayer.getGroup().getPrefix()+event.getPlayer().getName()));
+  event.getPlayer().displayName(Component.text(permissionPlayer.getGroup().getPrefix()+event.getPlayer().getName()+"§r"));
 
  }
 
