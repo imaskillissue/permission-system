@@ -18,6 +18,9 @@ class PermissionsOwnerTest {
   static void setUp() {
     server = MockBukkit.mock();
     MockBukkit.load(PermissionSystem.class);
+    if (!PermissionSystem.getInstance().sql.isConnected()) {
+      PermissionSystem.getInstance().sql.connect();
+    }
   }
 
   @AfterAll

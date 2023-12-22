@@ -3,6 +3,7 @@ package me.skillissue.permissionsystem.sql;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
+import java.security.InvalidParameterException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -13,16 +14,16 @@ import me.skillissue.permissionsystem.utils.FileConfigUtil;
 import org.bukkit.Bukkit;
 
 public class SqlConnection {
-  private static PreparedStatement addUser;
-  private static PreparedStatement getUser;
-  private static PreparedStatement dropTables;
-  private static PreparedStatement addGroup;
   @FileConfigField private final String host;
   @FileConfigField private final String port;
   @FileConfigField private final String database;
   @FileConfigField private final String username;
   @FileConfigField private final String password;
   private Connection connection;
+  private PreparedStatement addUser;
+  private PreparedStatement getUser;
+  private PreparedStatement dropTables;
+  private PreparedStatement addGroup;
 
   public SqlConnection() {
     this.host = "localhost";
@@ -67,7 +68,7 @@ public class SqlConnection {
       preparedStatement.close();
       preparedStatement =
           connection.prepareStatement(
-              "CREATE TABLE IF NOT EXISTS groups ("
+              "CREATE TABLE IF NOT EXISTS `groups` ("
                   + "id INT AUTO_INCREMENT primary key NOT NULL, "
                   + "name VARCHAR(64) NOT NULL ,"
                   + "prefix VARCHAR(16),"
@@ -104,6 +105,9 @@ public class SqlConnection {
   }
 
   public void addUser(PermissionPlayer player) {
+    if (player == null) {
+      throw new InvalidParameterException("Player can't be null");
+    }
     try {
       addUser.clearParameters();
       addUser.setString(1, player.getPlayer().getUniqueId().toString());
