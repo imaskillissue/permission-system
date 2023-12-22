@@ -16,7 +16,8 @@ public class PlayerStorage {
     if (permissionPlayerHashMap.containsKey(player)) {
       return permissionPlayerHashMap.get(player);
     }
-    PermissionPlayer permissionPlayer = PermissionSystem.getInstance().sql.getPlayer(player.getUniqueId().toString());
+    PermissionPlayer permissionPlayer =
+        PermissionSystem.getInstance().sql.getPlayer(player.getUniqueId());
     return permissionPlayer;
   }
 

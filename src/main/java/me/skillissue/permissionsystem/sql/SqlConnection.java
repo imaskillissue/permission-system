@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.UUID;
 import me.skillissue.permissionsystem.structures.Group;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import me.skillissue.permissionsystem.utils.FileConfigField;
@@ -12,18 +13,16 @@ import me.skillissue.permissionsystem.utils.FileConfigUtil;
 import org.bukkit.Bukkit;
 
 public class SqlConnection {
-  @FileConfigField private String host;
-  @FileConfigField private String port;
-  @FileConfigField private String database;
-  @FileConfigField private String username;
-  @FileConfigField private String password;
-  private HikariDataSource dataSource;
-  private Connection connection;
-
   private static PreparedStatement addUser;
   private static PreparedStatement getUser;
   private static PreparedStatement dropTables;
   private static PreparedStatement addGroup;
+  @FileConfigField private final String host;
+  @FileConfigField private final String port;
+  @FileConfigField private final String database;
+  @FileConfigField private final String username;
+  @FileConfigField private final String password;
+  private Connection connection;
 
   public SqlConnection() {
     this.host = "localhost";
@@ -54,7 +53,7 @@ public class SqlConnection {
     config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
     config.setUsername("valo");
     config.setPassword("pw");
-    dataSource = new HikariDataSource(config);
+    HikariDataSource dataSource = new HikariDataSource(config);
     try {
       connection = dataSource.getConnection();
       PreparedStatement preparedStatement =
@@ -78,7 +77,7 @@ public class SqlConnection {
       addUser =
           connection.prepareStatement(
               "INSERT INTO users (uuid, usergroup, rankexpire, permissions) VALUES (?, ?, ?, ?);");
-      getUser = connection.prepareStatement("SELECT * FROM users WHERE uuid = ?");
+      getUser = connection.prepareStatement("SELECT * FROM `users` where uuid = ?;");
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -117,19 +116,18 @@ public class SqlConnection {
     }
   }
 
-  public PermissionPlayer getPlayer(String uuid) {
+  public PermissionPlayer getPlayer(UUID uuid) {
     PermissionPlayer permissionPlayer = new PermissionPlayer(Bukkit.getOfflinePlayer(uuid));
     try {
-      getUser.setString(1, uuid);
+      getUser.setString(1, uuid.toString());
       ResultSet resultSet = getUser.executeQuery();
       if (!resultSet.next()) {
         addUser(permissionPlayer);
         return permissionPlayer;
       }
-      permissionPlayer.updateList(resultSet.getString("permission"));
-      permissionPlayer.setGroup(getGroup(resultSet.getInt("usergroup")));
-      resultSet.getLong("rankexpire");
-
+      permissionPlayer.updateList(resultSet.getString("permissions"));
+      permissionPlayer.setGroup(
+          getGroup(resultSet.getInt("usergroup")), resultSet.getLong("rankexpire"));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -229,10 +227,18 @@ public class SqlConnection {
 
   public PreparedStatement createStatement(String sql) {
     try {
-      return dataSource.getConnection().prepareStatement(sql);
+      return connection.prepareStatement(sql);
     } catch (Exception e) {
       e.printStackTrace();
     }
     return null;
+  }
+
+  public void close() {
+    try {
+      connection.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

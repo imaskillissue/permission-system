@@ -23,13 +23,13 @@ public abstract class PermissionsOwner {
       return;
     }
     ATTACHMENTS.put(permission, new ArrayList<>());
-    save();
     for (OfflinePlayer player : players) {
       if (player.getPlayer() == null) {
         continue;
       }
       ATTACHMENTS.get(permission).add(PermissionUtil.addPermission(player.getPlayer(), permission));
     }
+    save();
   }
 
   public void addPermissions(String[] permissions) {
@@ -61,8 +61,10 @@ public abstract class PermissionsOwner {
   public void updateList(String permissionsData) {
     String[] permissions = permissionsData.split(";");
     String[] toRemove =
-            Arrays.stream(ATTACHMENTS.keySet().toArray())
-                .filter(o -> !Arrays.stream(permissions).anyMatch(s -> s.equals(o))).toList().toArray(new String[0]);
+        Arrays.stream(ATTACHMENTS.keySet().toArray())
+            .filter(o -> !Arrays.stream(permissions).anyMatch(s -> s.equals(o)))
+            .toList()
+            .toArray(new String[0]);
     removePermissions(toRemove);
     addPermissions(permissions);
   }
@@ -72,7 +74,6 @@ public abstract class PermissionsOwner {
       ATTACHMENTS.get(permission).add(PermissionUtil.addPermission(player, permission));
     }
   }
-
 
   protected void removePermissionsGivenByGroup(Player player) {
     for (ArrayList<PermissionAttachment> attachments : ATTACHMENTS.values()) {

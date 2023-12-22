@@ -43,6 +43,7 @@ public class Group extends PermissionsOwner {
 
   // WARNING: DO NOT USE THIS METHOD!!!
   // This method is only used by the database to set the id
+  // TODO: Make the code private and Invoke it via the class object
   public void __pls_Dont_Use_It__(int i) {
     this.id = i;
   }
@@ -83,9 +84,9 @@ public class Group extends PermissionsOwner {
                 .createStatement(
                     "UPDATE `groups` SET name = ?, prefix = ?, permissions = ? WHERE id = ?;");
       }
-      updateStatement.setString(1, String.join(";", getPermissions()));
-      updateStatement.setString(2, name);
-      updateStatement.setString(3, prefix);
+      updateStatement.setString(1, name);
+      updateStatement.setString(2, prefix);
+      updateStatement.setString(3, String.join(";", getPermissions()));
       updateStatement.setInt(4, id);
       updateStatement.executeUpdate();
     } catch (Exception ex) {

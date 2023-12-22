@@ -22,34 +22,32 @@ public class MovementListener implements Listener {
       for (int x = 0; x < 10; x++) {
         for (int y = 0; y < 10; y++) {
           for (int z = 0; z < 10; z++) {
-            if (event.getPlayer().getLocation().add(x, y, z).getBlock().getState()
-                instanceof Sign) {
-              Sign sign = (Sign) event.getPlayer().getLocation().add(x, y, z).getBlock().getState();
-              if (sign.getLine(0).equalsIgnoreCase("[Permissions]")) {
+            if (event.getPlayer().getLocation().add(x - 5, y - 5, z - 5).getBlock().getState() instanceof Sign sign) {
+             if (sign.getLine(0).equalsIgnoreCase("[Permissions]")) {
                 PermissionPlayer permissionPlayer =
                     PlayerStorage.getPermissionData(event.getPlayer());
                 event
                     .getPlayer()
                     .sendSignChange(
-                        event.getPlayer().getLocation().add(x, y, z),
+                        event.getPlayer().getLocation().add(x - 5, y - 5, z - 5),
                         new String[] {
                           StringUtils.formatMessage("%sign_line1")
-                              .replace("%group%", permissionPlayer.getGroup().getName())
+                              .replace("%group", permissionPlayer.getGroup().getName())
                               .replace(
                                   "%expire",
                                   StringUtils.formatTime(permissionPlayer.getRankExpire(), 3)),
                           StringUtils.formatMessage("%sign_line2")
-                              .replace("%group%", permissionPlayer.getGroup().getName())
+                              .replace("%group", permissionPlayer.getGroup().getName())
                               .replace(
                                   "%expire",
                                   StringUtils.formatTime(permissionPlayer.getRankExpire(), 3)),
                           StringUtils.formatMessage("%sign_line3")
-                              .replace("%group%", permissionPlayer.getGroup().getName())
+                              .replace("%group", permissionPlayer.getGroup().getName())
                               .replace(
                                   "%expire",
                                   StringUtils.formatTime(permissionPlayer.getRankExpire(), 3)),
                           StringUtils.formatMessage("%sign_line4")
-                              .replace("%group%", permissionPlayer.getGroup().getName())
+                              .replace("%group", permissionPlayer.getGroup().getName())
                               .replace(
                                   "%expire",
                                   StringUtils.formatTime(permissionPlayer.getRankExpire(), 3))

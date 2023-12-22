@@ -18,6 +18,7 @@ public class StringUtils {
     if (time == 0) {
       return "Lifetime";
     }
+    time -= System.currentTimeMillis();
     StringBuilder result = new StringBuilder();
     long[] units = {31104000000L, 2592000000L, 86400000, 3600000, 60000, 1000};
     String[] unitNames = {"y", "M", "d", "h", "m", "s"};
@@ -47,14 +48,14 @@ public class StringUtils {
   }
 
   private static long parseUnit(String unit) {
-   return switch (unit) {
-    case "s" -> 1000;
-    case "m" -> 60000;
-    case "h" -> 3600000;
-    case "d" -> 86400000;
-    case "M" -> 2592000000L;
-    case "y" -> 31104000000L;
-    default -> 0;
-   };
+    return switch (unit) {
+      case "s" -> 1000;
+      case "m" -> 60000;
+      case "h" -> 3600000;
+      case "d" -> 86400000;
+      case "M" -> 2592000000L;
+      case "y" -> 31104000000L;
+      default -> 0;
+    };
   }
 }

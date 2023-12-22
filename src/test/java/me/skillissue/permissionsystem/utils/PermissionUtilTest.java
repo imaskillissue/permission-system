@@ -6,21 +6,19 @@ import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import me.skillissue.permissionsystem.PermissionSystem;
 import org.bukkit.entity.Player;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 class PermissionUtilTest {
-  ServerMock server;
+  static ServerMock server;
 
-  @BeforeEach
-  void setUp() {
+  @BeforeAll
+  static void setUp() {
     server = MockBukkit.mock();
     MockBukkit.load(PermissionSystem.class);
   }
 
-  @AfterEach
-  void cleanUp() {
+  @AfterAll
+  static void cleanUp() {
     PermissionSystem.getInstance().sql.dropTables();
     MockBukkit.unmock();
   }

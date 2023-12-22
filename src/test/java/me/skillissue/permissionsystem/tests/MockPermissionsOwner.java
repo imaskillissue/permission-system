@@ -21,7 +21,5 @@ public class MockPermissionsOwner extends PermissionsOwner {
   }
 
   @Override
-  protected void save() {
-
-  }
+  protected void save() {}
 }

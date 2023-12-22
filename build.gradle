@@ -77,6 +77,7 @@ task run(type: JavaExec) {
     }
     mkdir("test-server/plugins")
     def plugin = file(buildDir.absolutePath + "/libs").listFiles()[0]
+    file("test-server/plugins/PermissionsSystem.jar").delete()
     if (plugin.exists())
         plugin.withInputStream { is ->
             file("test-server/plugins/PermissionsSystem.jar").withOutputStream { it << is }

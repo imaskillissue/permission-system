@@ -14,7 +14,7 @@ Simple permission System for PaperMC
 - [X] Add Command
 - [X] Add Config
 - [X] Add Group Structure
-- [ ] Permission Signs
+- [X] Permission Signs
 - [X] Add Group Prefix
 - [X] Instant group update
 - [X] Command to show the player his group and until when

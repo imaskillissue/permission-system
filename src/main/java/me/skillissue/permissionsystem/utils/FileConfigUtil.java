@@ -54,9 +54,8 @@ public class FileConfigUtil {
         continue;
       }
       try {
-        if (field.get(o) instanceof HashMap<?, ?> && configuration.get(field.getName()) != null) {
-          HashMap<?, ?> map = (HashMap<?, ?>) field.get(o);
-          if (configuration.get(field.getName()) instanceof HashMap<?, ?>) {
+        if (field.get(o) instanceof HashMap<?, ?> map && configuration.get(field.getName()) != null) {
+         if (configuration.get(field.getName()) instanceof HashMap<?, ?>) {
             map.putAll((HashMap) configuration.get(field.getName()));
           }
           continue;

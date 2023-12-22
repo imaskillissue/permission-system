@@ -8,7 +8,7 @@ import java.util.List;
 import me.skillissue.permissionsystem.PermissionSystem;
 import me.skillissue.permissionsystem.sql.SqlConnection;
 import me.skillissue.permissionsystem.utils.GroupStorage;
-import org.bukkit.Bukkit;
+import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
 
 public class PermissionPlayer extends PermissionsOwner {
@@ -32,27 +32,14 @@ public class PermissionPlayer extends PermissionsOwner {
   }
 
   public void setGroup(Group group, long rankExpire) {
-    if (this.group != null && Bukkit.getPlayer(this.getPlayer().getUniqueId()) != null) {
-      this.group.removePermissionsGivenByGroup(Bukkit.getPlayer(this.getPlayer().getUniqueId()));
-    }
     this.group = group;
     this.rankExpire = rankExpire;
     group.addPlayer(this);
-    try {
-      if (updateStatement == null) {
-        updateStatement =
-            PermissionSystem.getInstance()
-                .sql
-                .createStatement("UPDATE users SET usergroup = ?, rankexpire = ?, permissions = ? WHERE uuid = ?;");
-      }
-
-      updateStatement.setInt(1, group.getId());
-      updateStatement.setLong(2, rankExpire);
-        updateStatement.setString(3, String.join(";", getPermissions()));
-      updateStatement.setString(4, getPlayer().getUniqueId().toString());
-      updateStatement.executeUpdate();
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+    save();
+    if (this.PLAYER.isOnline()) {
+      this.PLAYER
+          .getPlayer()
+          .displayName(Component.text(group.getPrefix() + this.PLAYER.getName() + "§r"));
     }
   }
 
@@ -80,7 +67,7 @@ public class PermissionPlayer extends PermissionsOwner {
       ResultSet resultSet = PermissionPlayer.selectStatement.executeQuery();
       if (resultSet.next()) {
         setGroup(
-            GroupStorage.getGroupById(resultSet.getInt("group_id")),
+            GroupStorage.getGroupById(resultSet.getInt("usergroup")),
             resultSet.getLong("rankexpire"));
         updateList(resultSet.getString("permissions"));
       }
@@ -96,7 +83,8 @@ public class PermissionPlayer extends PermissionsOwner {
         updateStatement =
             PermissionSystem.getInstance()
                 .sql
-                .createStatement("UPDATE users SET usergroup = ?, rankexpire = ?, permissions = ? WHERE uuid = ?;");
+                .createStatement(
+                    "UPDATE users SET usergroup = ?, rankexpire = ?, permissions = ? WHERE uuid = ?;");
       }
       updateStatement.setInt(1, group.getId());
       updateStatement.setLong(2, rankExpire);

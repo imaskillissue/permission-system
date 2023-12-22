@@ -3,10 +3,17 @@ version: '${version}'
 main: me.skillissue.permissionsystem.PermissionSystem
 api-version: '1.20'
 author: ImaSkillissue
-loader: me.skillissue.permissionsystem.PermissionSystemLoader
+
+libraries:
+    - com.zaxxer:HikariCP:5.1.0
+    - mysql:mysql-connector-java:8.0.33
 
 commands:
     permissionsystem:
         description: PermissionSystem command
         usage: /permissionsystem
-        aliases: [ps, perms]
+        aliases: [ ps, perms ]
+    myrank:
+        description: Shows your rank
+        usage: /myrank
+        aliases: [ rank ]

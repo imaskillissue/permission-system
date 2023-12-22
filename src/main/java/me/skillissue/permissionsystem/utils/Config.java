@@ -10,7 +10,9 @@ public class Config {
 
   public Config() {
     instance = this;
-    messages.put("command_help", """
+    messages.put(
+        "command_help",
+        """
         %prefix §6/%command Help
         §7/%command help §8- §7Shows this help
         §7/%command user <username> §8- §7Shows user info
@@ -38,16 +40,19 @@ public class Config {
     messages.put("group_created", "%prefix §aGroup created!");
     messages.put("group_deleted", "%prefix §aGroup deleted!");
     messages.put("group_doesnt_have_permission", "%prefix §7doesn't have permission!");
-    messages.put("group_info", """
+    messages.put(
+        "group_info",
+        """
         %prefix §6Group Info
         §7Name: §a%name
-        §7Prefix: §a%prefix
+        §7Prefix: §a%gprefix
         §7Permissions: §a%permissions""");
     messages.put("group_not_found", "%prefix §cGroup not found!");
     messages.put("group_prefix_set", "%prefix §7The prefix is now %updated!");
     messages.put("group_removed_permission", "%prefix §7removed permission!");
     messages.put("group_set", "%prefix group is now %group for %expire!");
     messages.put("no_permission", "%prefix §cYou don't have permission to do that!");
+    messages.put("no_player", "%prefix §cYou must be a player to do that!");
     messages.put("player_not_found", "%prefix §cPlayer not found!");
     messages.put("plugin_loaded", "%prefix §aPlugin loaded!");
     messages.put("prefix", "§cPermissionSystem §8»§7");
@@ -61,7 +66,9 @@ public class Config {
     messages.put("user_already_has_permission", "%prefix §7already has permission!");
     messages.put("user_doesnt_have_permission", "%prefix §7doesn't have permission!");
     messages.put("user_group_set", "%prefix §7%target's group is now %group for %expire!");
-    messages.put("user_info", """
+    messages.put(
+        "user_info",
+        """
         %prefix §6User Info
         §7Username: §a%username
         §7Group: §a%group

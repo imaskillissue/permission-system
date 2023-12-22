@@ -9,9 +9,9 @@ import me.skillissue.permissionsystem.sql.SqlConnection;
 import me.skillissue.permissionsystem.structures.Group;
 
 public class GroupStorage {
+  private static final HashMap<Integer, Group> GROUPS = new HashMap<>();
   private static PreparedStatement selectStatement;
   private static PreparedStatement dropStatement;
-  private static final HashMap<Integer, Group> GROUPS = new HashMap<>();
 
   static {
     for (Group group : PermissionSystem.getInstance().sql.getGroups()) {
@@ -25,10 +25,15 @@ public class GroupStorage {
 
   public static Group getGroupByName(String name) {
     try {
-      return (Group)
+      Group[] groups =
           GROUPS.values().stream()
-              .filter(group -> group.getName().equalsIgnoreCase(name))
-              .toArray()[0];
+              .filter(group -> group.getName().equals(name))
+              .toArray(Group[]::new);
+      if (groups.length == 0) {
+        return null;
+      } else {
+        return groups[0];
+      }
     } catch (ClassCastException ex) {
       return null;
     }

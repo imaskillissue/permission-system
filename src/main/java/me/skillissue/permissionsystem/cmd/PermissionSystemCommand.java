@@ -9,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class PermissionSystemCommand implements CommandExecutor {
@@ -76,17 +75,16 @@ public class PermissionSystemCommand implements CommandExecutor {
       }
       commandSender.sendMessage(
           StringUtils.formatMessage("%group_info")
-              .replace("%group", args[1])
+              .replace("%name", args[1])
               .replace(
-                  "%prefix", GroupStorage.getGroupByName(args[1])
-                              .getPrefix().replace("§", "&"))
+                  "%gprefix", GroupStorage.getGroupByName(args[1]).getPrefix().replace("§", "&"))
               .replace(
                   "%permissions",
                   String.join(", ", GroupStorage.getGroupByName(args[1]).getPermissions())));
       return;
     }
 
-    switch (args[1].toLowerCase()) {
+    switch (args[2].toLowerCase()) {
       case "create":
         if (!commandSender.hasPermission("permissionsystem.group.create")) {
           commandSender.sendMessage(StringUtils.formatMessage("%no_permission"));
@@ -131,92 +129,92 @@ public class PermissionSystemCommand implements CommandExecutor {
   }
 
   private void groupPrefix(CommandSender commandSender, String[] args) {
-    if (args.length <= 4) {
+    if (args.length != 4) {
       commandSender.sendMessage(
           StringUtils.formatMessage("%command_invalid_usage")
               .replace("%command", "permissionsystem"));
       return;
     }
-    if (GroupStorage.getGroupByName(args[3]) == null) {
+    if (GroupStorage.getGroupByName(args[1]) == null) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_not_found"));
       return;
     }
-    GroupStorage.getGroupByName(args[3]).setPrefix(args[4].replace("&", "§"));
-    commandSender.sendMessage(StringUtils.formatMessage("%group_prefix_set").replace("%updated", args[4]));
+    GroupStorage.getGroupByName(args[1]).setPrefix(args[3].replace("&", "§"));
+    commandSender.sendMessage(
+        StringUtils.formatMessage("%group_prefix_set").replace("%updated", args[3]));
   }
 
   private void groupRemove(CommandSender commandSender, String[] args) {
-    if (args.length <= 4) {
+    if (args.length != 4) {
       commandSender.sendMessage(
           StringUtils.formatMessage("%command_invalid_usage")
               .replace("%command", "permissionsystem"));
       return;
     }
-    if (GroupStorage.getGroupByName(args[3]) == null) {
+    if (GroupStorage.getGroupByName(args[1]) == null) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_not_found"));
       return;
     }
-    if (!GroupStorage.getGroupByName(args[3]).hasPermission(args[4])) {
+    if (!GroupStorage.getGroupByName(args[1]).hasPermission(args[3])) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_doesnt_have_permission"));
       return;
     }
-    GroupStorage.getGroupByName(args[3]).removePermission(args[4]);
+    GroupStorage.getGroupByName(args[1]).removePermission(args[3]);
     commandSender.sendMessage(
         StringUtils.formatMessage("%group_removed_permission")
-            .replace("%permission", args[4])
-            .replace("%group", args[3]));
+            .replace("%permission", args[3])
+            .replace("%group", args[1]));
   }
 
   private void groupAdd(CommandSender commandSender, String[] args) {
-    if (args.length <= 4) {
+    if (args.length != 4) {
       commandSender.sendMessage(
           StringUtils.formatMessage("%command_invalid_usage")
               .replace("%command", "permissionsystem"));
       return;
     }
-    if (GroupStorage.getGroupByName(args[3]) == null) {
+    if (GroupStorage.getGroupByName(args[1]) == null) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_not_found"));
       return;
     }
-    if (GroupStorage.getGroupByName(args[3]).hasPermission(args[4])) {
+    if (GroupStorage.getGroupByName(args[1]).hasPermission(args[3])) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_already_has_permission"));
       return;
     }
-    GroupStorage.getGroupByName(args[3]).addPermission(args[4]);
+    GroupStorage.getGroupByName(args[1]).addPermission(args[3]);
     commandSender.sendMessage(
         StringUtils.formatMessage("%group_added_permission")
-            .replace("%permission", args[4])
-            .replace("%group", args[3]));
+            .replace("%permission", args[3])
+            .replace("%group", args[1]));
   }
 
   private void groupDelete(CommandSender commandSender, String[] args) {
-    if (args.length <= 5) {
+    if (args.length != 3) {
       commandSender.sendMessage(
           StringUtils.formatMessage("%command_invalid_usage")
               .replace("%command", "permissionsystem"));
       return;
     }
-    if (GroupStorage.getGroupByName(args[2]) == null) {
+    if (GroupStorage.getGroupByName(args[1]) == null) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_not_found"));
       return;
     }
-    GroupStorage.deleteGroup(GroupStorage.getGroupByName(args[2]));
+    GroupStorage.deleteGroup(GroupStorage.getGroupByName(args[1]));
     commandSender.sendMessage(
-        StringUtils.formatMessage("%group_deleted").replace("%group", args[2]));
+        StringUtils.formatMessage("%group_deleted").replace("%group", args[1]));
   }
 
   private void groupCreate(CommandSender commandSender, String[] args) {
-    if (args.length <= 5) {
+    if (args.length != 3) {
       commandSender.sendMessage(
-          StringUtils.formatMessage("%command_invalid_usage")
-              .replace("%command", "permissionsystem"));
+          StringUtils.formatMessage("%command_invalid_usage").replace("%command", "ps"));
       return;
     }
-    if (GroupStorage.getGroupByName(args[2]) != null) {
+    if (GroupStorage.getGroupByName(args[1]) != null) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_already_exists"));
       return;
     }
-    if (!GroupStorage.addGroup(args[2])) {
+    if (!GroupStorage.addGroup(args[1])) {
       commandSender.sendMessage(StringUtils.formatMessage("%error"));
       return;
     }
@@ -284,13 +282,13 @@ public class PermissionSystemCommand implements CommandExecutor {
   }
 
   private void userRemove(CommandSender commandSender, String[] args) {
-    if (args.length <= 4) {
+    if (args.length < 4) {
       commandSender.sendMessage(
           StringUtils.formatMessage("%command_invalid_usage")
               .replace("%command", "permissionsystem"));
       return;
     }
-    Player player = (Player) commandSender;
+    OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
     PermissionPlayer permissionPlayer = PlayerStorage.getPermissionData(player);
     if (!permissionPlayer.hasPermission(args[3])) {
       commandSender.sendMessage(StringUtils.formatMessage("%user_doesnt_have_permission"));
@@ -304,13 +302,13 @@ public class PermissionSystemCommand implements CommandExecutor {
   }
 
   private void userAdd(CommandSender commandSender, String[] args) {
-    if (args.length <= 4) {
+    if (args.length < 4) {
       commandSender.sendMessage(
           StringUtils.formatMessage("%command_invalid_usage")
               .replace("%command", "permissionsystem"));
       return;
     }
-    Player player = (Player) commandSender;
+    OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
     PermissionPlayer permissionPlayer = PlayerStorage.getPermissionData(player);
     if (permissionPlayer.hasPermission(args[3])) {
       commandSender.sendMessage(StringUtils.formatMessage("%user_already_has_permission"));
@@ -323,21 +321,22 @@ public class PermissionSystemCommand implements CommandExecutor {
             .replace("%target", player.getName()));
   }
 
+  // TODO CORRECT TARGET GRABING
   private void userGroup(CommandSender commandSender, String[] args) {
-    if (args.length <= 6) {
+    if (args.length > 5 || args.length < 4) {
       commandSender.sendMessage(
           StringUtils.formatMessage("%command_invalid_usage")
               .replace("%command", "permissionsystem"));
       return;
     }
-    Player player = (Player) commandSender;
+    OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
     PermissionPlayer permissionPlayer = PlayerStorage.getPermissionData(player);
     if (GroupStorage.getGroupByName(args[3]) == null) {
       commandSender.sendMessage(StringUtils.formatMessage("%group_not_found"));
       return;
     }
     long expire = 0;
-    if (args.length == 4) {
+    if (args.length == 5) {
       expire = StringUtils.parseTime(args[4]);
       if (expire == 0) {
         commandSender.sendMessage(
@@ -345,6 +344,7 @@ public class PermissionSystemCommand implements CommandExecutor {
                 .replace("%command", "permissionsystem"));
         return;
       }
+      expire += System.currentTimeMillis();
     }
     permissionPlayer.setGroup(GroupStorage.getGroupByName(args[3]), expire);
     commandSender.sendMessage(
