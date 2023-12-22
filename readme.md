@@ -4,6 +4,10 @@ Simple permission System for PaperMC
 ## Commands
 ### /permissionsystem
 ### Aliases: `/ps /perms`
+### /myrank
+### Aliases: `/rank`
+## Signs
+Write on the first line of the sign `[rank]` to create and have the permission `permissionsystem.sign`
 ## Permissions
 ### TODO
 ## ToDo's:
