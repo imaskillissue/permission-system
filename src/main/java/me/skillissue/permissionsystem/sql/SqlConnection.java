@@ -12,6 +12,7 @@ import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import me.skillissue.permissionsystem.utils.FileConfigField;
 import me.skillissue.permissionsystem.utils.FileConfigUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 public class SqlConnection {
   @FileConfigField private final String host;
@@ -24,6 +25,9 @@ public class SqlConnection {
   private PreparedStatement getUser;
   private PreparedStatement dropTables;
   private PreparedStatement addGroup;
+  private PreparedStatement addSign;
+  private PreparedStatement getSigns;
+  private PreparedStatement removeSign;
 
   public SqlConnection() {
     this.host = "localhost";
@@ -52,8 +56,8 @@ public class SqlConnection {
   public void connect() {
     HikariConfig config = new HikariConfig();
     config.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
-    config.setUsername("valo");
-    config.setPassword("pw");
+    config.setUsername(username);
+    config.setPassword(password);
     HikariDataSource dataSource = new HikariDataSource(config);
     try {
       connection = dataSource.getConnection();
@@ -74,6 +78,17 @@ public class SqlConnection {
                   + "prefix VARCHAR(16),"
                   + "permissions TEXT NOT NULL);");
       preparedStatement.execute();
+      preparedStatement.close();
+      preparedStatement =
+          connection.prepareStatement(
+              "CREATE TABLE IF NOT EXISTS signs ("
+                  + "x FLOAT,"
+                  + "y FLOAT,"
+                  + "z FLOAT,"
+                  + "world VARCHAR(64)"
+                  + ");");
+      preparedStatement.execute();
+      preparedStatement.close();
 
       addUser =
           connection.prepareStatement(
@@ -236,6 +251,61 @@ public class SqlConnection {
       e.printStackTrace();
     }
     return null;
+  }
+
+  public void addSign(Location location) {
+    try {
+      if (addSign == null) {
+        addSign =
+            connection.prepareStatement("INSERT INTO signs (x, y, z, world) VALUES (?, ?, ?, ?);");
+      }
+      addSign.setFloat(1, (float) location.getX());
+      addSign.setFloat(2, (float) location.getY());
+      addSign.setFloat(3, (float) location.getZ());
+      addSign.setString(4, location.getWorld().getName());
+      addSign.execute();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public Location[] getSigns() {
+    try {
+      if (getSigns == null) {
+        getSigns = connection.prepareStatement("SELECT * FROM signs;");
+      }
+      ResultSet resultSet = getSigns.executeQuery();
+      ArrayList<Location> locations = new ArrayList<>();
+      while (resultSet.next()) {
+        locations.add(
+            new Location(
+                Bukkit.getWorld(resultSet.getString("world")),
+                resultSet.getFloat("x"),
+                resultSet.getFloat("y"),
+                resultSet.getFloat("z")));
+      }
+      return locations.toArray(new Location[0]);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public void removeSign(Location location) {
+    try {
+      if (removeSign == null) {
+        removeSign =
+            connection.prepareStatement(
+                "DELETE FROM signs WHERE x = ? AND y = ? AND z = ? AND world = ?;");
+      }
+      removeSign.setFloat(1, (float) location.getX());
+      removeSign.setFloat(2, (float) location.getY());
+      removeSign.setFloat(3, (float) location.getZ());
+      removeSign.setString(4, location.getWorld().getName());
+      removeSign.execute();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public void close() {

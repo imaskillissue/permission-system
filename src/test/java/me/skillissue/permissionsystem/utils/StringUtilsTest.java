@@ -8,6 +8,11 @@ import org.junit.jupiter.api.Test;
 class StringUtilsTest {
   private final StringUtils stringUtils = new StringUtils();
 
+  @BeforeAll
+  static void setup() {
+    new Config();
+  }
+
   @Test
   void parseTimeReturnsCorrectMillisecondsForSingleUnit() {
     long result = StringUtils.parseTime("1s");
@@ -116,10 +121,5 @@ class StringUtilsTest {
     String result =
         StringUtils.formatTime(System.currentTimeMillis() + 2592000000L + 86400000 + 1000, 2);
     assertEquals("1M1d", result);
-  }
-
-  @BeforeAll
-  static void setup() {
-    new Config();
   }
 }

@@ -1,20 +1,19 @@
 package me.skillissue.permissionsystem.sql;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import java.security.InvalidParameterException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import me.skillissue.permissionsystem.PermissionSystem;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import me.skillissue.permissionsystem.utils.GroupStorage;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.*;
-
-import java.security.InvalidParameterException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class SqlConnectionTest {
   static SqlConnection sqlConnection;

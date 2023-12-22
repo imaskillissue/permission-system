@@ -3,9 +3,8 @@ package me.skillissue.permissionsystem;
 import java.util.List;
 import me.skillissue.permissionsystem.cmd.MyRankCommand;
 import me.skillissue.permissionsystem.cmd.PermissionSystemCommand;
-import me.skillissue.permissionsystem.injection.CraftBukkitInfo;
-import me.skillissue.permissionsystem.listeners.MovementListener;
 import me.skillissue.permissionsystem.listeners.ServerMemberHandler;
+import me.skillissue.permissionsystem.listeners.SignHandling;
 import me.skillissue.permissionsystem.sql.SqlConnection;
 import me.skillissue.permissionsystem.structures.PermissionPlayer;
 import me.skillissue.permissionsystem.utils.Config;
@@ -19,6 +18,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class PermissionSystem extends JavaPlugin {
   private static PermissionSystem instance;
   public SqlConnection sql;
+
+  public static PermissionSystem getInstance() {
+    return instance;
+  }
 
   @Override
   public void onEnable() {
@@ -37,7 +40,7 @@ public class PermissionSystem extends JavaPlugin {
     this.getCommand("myrank").setExecutor(new MyRankCommand());
     this.getCommand("myrank").setAliases(List.of("rank"));
     Bukkit.getPluginManager().registerEvents(new ServerMemberHandler(), this);
-    Bukkit.getPluginManager().registerEvents(new MovementListener(), this);
+    Bukkit.getPluginManager().registerEvents(new SignHandling(), this);
     Bukkit.getScheduler()
         .runTaskTimer(
             this,
@@ -51,6 +54,7 @@ public class PermissionSystem extends JavaPlugin {
         .runTaskTimer(
             this,
             () -> {
+              SignHandling.updateSigns();
               for (Player player : Bukkit.getOnlinePlayers()) {
                 PermissionPlayer permissionPlayer = PlayerStorage.getPermissionData(player);
                 if (permissionPlayer.getRankExpire() > 0
@@ -62,8 +66,6 @@ public class PermissionSystem extends JavaPlugin {
             },
             0L,
             20L);
-    String playerClass = CraftBukkitInfo.toClassName("entity.CraftHumanEntity");
-    Bukkit.getConsoleSender().sendMessage(playerClass);
     Bukkit.getConsoleSender()
         .sendMessage(StringUtils.formatMessage(StringUtils.formatMessage("%plugin_loaded")));
   }
@@ -71,9 +73,5 @@ public class PermissionSystem extends JavaPlugin {
   @Override
   public void onDisable() {
     sql.close();
-  }
-
-  public static PermissionSystem getInstance() {
-    return instance;
   }
 }

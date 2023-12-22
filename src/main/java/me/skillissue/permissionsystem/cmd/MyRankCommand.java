@@ -20,7 +20,7 @@ public class MyRankCommand implements CommandExecutor {
       commandSender.sendMessage(StringUtils.formatMessage("%no_player"));
       return true;
     }
-   PermissionPlayer permissionPlayer = PlayerStorage.getPermissionData(player);
+    PermissionPlayer permissionPlayer = PlayerStorage.getPermissionData(player);
     player.sendMessage(
         StringUtils.formatMessage("%user_info")
             .replace("%username", player.getName())
